@@ -74,6 +74,10 @@ func (bn *BroadcastingNode) Broadcast(msg maelstrom.Message) error {
 	bn.messages[messageValue] = struct{}{}
 	bn.mu.Unlock()
 
+	for neighbor := range bn.neighbors {
+		bn.node.Send(neighbor, msg.Body)
+	}
+
 	var response map[string]any = make(map[string]any)
 	response["type"] = "broadcast_ok"
 	bn.Reply(msg, response)
